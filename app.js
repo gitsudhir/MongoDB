@@ -11,8 +11,7 @@ if (isMainThread) {
   const multer = require("multer");
   const xlsx = require("xlsx");
   const mongoose = require("mongoose");
-  const { run } = require("./database");
-  run("this is text").then(console.log).catch(console.dir);
+  const { run, insertData } = require("./database");
   const app = express();
   const PORT = process.env.PORT || 3000;
 
@@ -75,7 +74,15 @@ if (isMainThread) {
 
           return formattedDay + "-" + formattedMonth + "-" + year;
         }
-        res.send(convertedData);
+        insertData(convertedData)
+          .then((v) => {
+            console.log(v);
+            res.send(convertedData);
+          })
+          .catch((e) => {
+            console.log(e);
+            res.status(500).send("Error Inserting  data");
+          });
       });
 
       // Listen for errors from the worker thread

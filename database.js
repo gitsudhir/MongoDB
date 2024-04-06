@@ -28,5 +28,30 @@ async function run(query) {
     await client.close();
   }
 }
-// run().catch(console.dir);
+// Function to insert data into MongoDB
+async function insertData(data) {
+  try {
+    // Connect to MongoDB
+    await client.connect();
+
+    const dbName = process.env.DB;
+    const collectionName = process.env.COLLECTION;
+    // Select the database
+    const db = client.db(dbName);
+
+    // Insert the data into the collection
+    const result = await db.collection(collectionName).insertMany(data);
+
+    console.log(`${result.insertedCount} documents inserted`);
+
+    return "✅";
+  } catch (error) {
+    console.error("Error inserting data:", error);
+    return "❌";
+  } finally {
+    // Close the connection
+    await client.close();
+  }
+}
 exports.run = run;
+exports.insertData = insertData;
