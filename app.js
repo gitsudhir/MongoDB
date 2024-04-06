@@ -2,7 +2,8 @@ const express = require("express");
 const multer = require("multer");
 const xlsx = require("xlsx");
 const mongoose = require("mongoose");
-
+const { run } = require("./database");
+run("this is text").then(console.log).catch(console.dir);
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -19,16 +20,27 @@ app.post("/upload", upload.single("file"), (req, res) => {
     const sheet = workbook.Sheets[sheetName];
     const data = xlsx.utils.sheet_to_json(sheet);
 
-    // Insert data into MongoDB
-    Data.insertMany(data, (err, docs) => {
-      if (err) {
-        console.error(err);
-        res.status(500).send("Error uploading data to MongoDB");
-      } else {
-        console.log("Data uploaded successfully:", docs);
-        res.status(200).send("Data uploaded successfully");
-      }
+    data.forEach((item) => {
+      item.dob = convertExcelDateToJSDate(item.dob);
+      item.policy_start_date = convertExcelDateToJSDate(item.policy_start_date);
+      item.policy_end_date = convertExcelDateToJSDate(item.policy_end_date);
     });
+
+    // Function to convert Excel date to JavaScript Date object
+    function convertExcelDateToJSDate(excelDate) {
+      const dateOffset = (excelDate - 25569) * 86400 * 1000; // Offset in milliseconds
+      const jsDate = new Date(dateOffset);
+      const day = jsDate.getDate();
+      const month = jsDate.getMonth() + 1; // Months are zero-based
+      const year = jsDate.getFullYear();
+
+      // Ensure day and month are formatted with leading zeros if necessary
+      const formattedDay = day < 10 ? "0" + day : day;
+      const formattedMonth = month < 10 ? "0" + month : month;
+
+      return formattedDay + "-" + formattedMonth + "-" + year;
+    }
+    res.json({ data });
   } catch (err) {
     console.error(err);
     res.status(400).send("Error parsing Excel file");
