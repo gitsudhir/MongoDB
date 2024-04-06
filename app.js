@@ -25,7 +25,31 @@ app.post("/upload", upload.single("file"), (req, res) => {
       item.policy_start_date = convertExcelDateToJSDate(item.policy_start_date);
       item.policy_end_date = convertExcelDateToJSDate(item.policy_end_date);
     });
-
+    const convertedData = data.map((item) => ({
+      agent: item.agent,
+      user: {
+        firstname: item.firstname,
+        dob: item.dob,
+        address: item.address,
+        phonenumber: item.phone,
+        state: item.state,
+        zip: item.zip,
+        email: item.email,
+        gender: "", // You'll need to provide this value separately
+        userType: item.userType,
+        account_name: item.account_name,
+      },
+      policy_category: item.category_name,
+      policy_carrier: item.company_name,
+      policy: {
+        policynumber: item.policy_number,
+        policy_start_date: item.policy_start_date,
+        policy_end_date: item.policy_end_date,
+        policy_collection_id: "", // You'll need to provide this value separately
+        company_collection_id: "", // You'll need to provide this value separately
+        user_id: "", // You'll need to provide this value separately
+      },
+    }));
     // Function to convert Excel date to JavaScript Date object
     function convertExcelDateToJSDate(excelDate) {
       const dateOffset = (excelDate - 25569) * 86400 * 1000; // Offset in milliseconds
@@ -40,7 +64,7 @@ app.post("/upload", upload.single("file"), (req, res) => {
 
       return formattedDay + "-" + formattedMonth + "-" + year;
     }
-    res.json({ data });
+    res.json({ convertedData });
   } catch (err) {
     console.error(err);
     res.status(400).send("Error parsing Excel file");
