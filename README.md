@@ -26,7 +26,7 @@ You have to perform the following tasks based above information:
 
 Task 1:
 
-1) Create API to upload the attached XLSX/CSV data into MongoDB. (Please accomplish this using worker threads)
+ 1) Create API to upload the attached XLSX/CSV data into MongoDB. (Please accomplish this using worker threads)
 
 2) Search API to find policy info with the help of the username.
 
