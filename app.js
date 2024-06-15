@@ -11,10 +11,11 @@ if (isMainThread) {
   const multer = require("multer");
   const xlsx = require("xlsx");
   const mongoose = require("mongoose");
+  const cors = require("cors");
   const { run, insertData } = require("./database");
   const app = express();
   const PORT = process.env.PORT || 3000;
-
+  app.use(cors());
   // Multer configuration for file upload
   const storage = multer.memoryStorage();
   const upload = multer({ storage: storage });
